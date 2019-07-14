@@ -101,10 +101,9 @@ end
 # ===== Main program start =====
 
 loan = terms.map { |t| [t, nil] }.to_h
-continue = true
 message = ''
 
-while continue
+loop do
   wipe_screen
   puts center(MSG[:title], '*') + "\n\n"
   puts center(MSG[:instructions])
@@ -118,7 +117,7 @@ while continue
   case selection
   when /^q/i # Quit program
     puts center(MSG[:exit], '*')
-    continue = false
+    break
   when /^[1-4]$/ # Data entry
     term = terms[selection.to_i - 1]
     loan[term] = get_term_value(term)
