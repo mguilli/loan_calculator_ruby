@@ -1,15 +1,12 @@
 :box_output:
-  :width: 40
-  :indent: 3
+  :padding: 34
   :terminal_width: 46
-  :title: 'Loan Terms'
   :amount: '1) Amount: '
   :rate: '2) Rate: '
   :length: '3) Length: '
   :payment: '4) Monthly Payment: '
-  :quit: "(Enter 'q' to quit)"
 :error_msg:
-  :not_enough_data: 'Please enter more loan terms before calculating.'
+  :not_enough_data: "Please enter more loan terms\nbefore calculating."
   :invalid_selection: "***** Invalid selection! *****"
   :invalid_data: '**** Invalid data entered!!! ****'
   :recalc: "\n**Data is incongruous. Please recalculate a loan term**"
@@ -25,9 +22,6 @@
   :length: 'Enter the length of the loan in whole months (Integers only).'
   :payment: 'Enter the monthly payment amount to 2 decimal places (Ex: 20 for $20.00)'
 :message:
-  :title: '_Welcome to Loan Calculator_'
-  :instructions: "Enter (1,2,3,or 4) to update a loan term\nPrepend with 'c' to calulate a loan term\nExample: enter 'c4' to calculate payment\n\n"
-  :prompt_msg: 'Please enter a selection: '
   :prompt: '>> '
   :exit: "_Thank you for using Loan Calculator!_"
 :regex:

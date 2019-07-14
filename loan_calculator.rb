@@ -1,37 +1,37 @@
 # Loan calculator
+
 require 'yaml'
 CONFIG = YAML.load_file('config.yml')
 MSG = CONFIG[:message]
 BOX = CONFIG[:box_output]
 ERR_MSG = CONFIG[:error_msg]
-terms = %i[amount rate length payment]
+TERMS = %i[amount rate length payment].freeze
 
 # **** Formatting methods
-def center(str, pad_char = ' ', width = BOX[:terminal_width])
-  str.lines.map { |line| line.strip.center(width, pad_char) }.join("\n")
-end
-
-def box_ends(msg, str, char)
-  indent = BOX[:indent]
-  msg << char.ljust(indent)
-  msg << str.ljust(BOX[:width] - (indent + 1))
-  msg << char + "\n"
-end
-
-def display_loan_terms(loan)
-  msg = center(BOX[:title], '=', BOX[:width]) + "\n"
-
-  loan.keys.each do |term|
+def loan_terms_string(loan)
+  output = loan.keys.map do |term|
     value_str = loan[term] ? CONFIG[:format][term] % loan[term] : 'No Data'
-    box_ends(msg, BOX[term] + value_str, '|')
+    value_str = (BOX[term] + value_str).ljust(BOX[:padding])
+    "|  #{value_str}  |"
   end
-
-  msg << center('=', '=', BOX[:width]) + "\n" + BOX[:quit]
-  msg
+  output.join("\n  ")
 end
 
-def wipe_screen
-  system('cls') || system('clear')
+def display_main_menu(loan, message)
+  puts <<~HEREDOC
+    ******** Welcome to Loan Calculator ********
+
+      Enter (1,2,3,or 4) to update a loan term
+      Prepend with 'c' to calulate a loan term
+      Example: enter 'c4' to calculate payment
+
+      ===============Loan Terms===============
+      #{loan_terms_string(loan)}
+      ========================================
+                (Enter 'q' to quit)
+    #{message.lines.map { |l| l.chomp.center(46) }.join("\n")}
+    Please enter a selection:
+  HEREDOC
 end
 
 # **** Calculation methods
@@ -100,31 +100,27 @@ end
 
 # ===== Main program start =====
 
-loan = terms.map { |t| [t, nil] }.to_h
+loan = TERMS.map { |t| [t, nil] }.to_h
 message = ''
 
 loop do
-  wipe_screen
-  puts center(MSG[:title], '*') + "\n\n"
-  puts center(MSG[:instructions])
-  puts center(display_loan_terms(loan))
-  puts center(message)
-  # Prompt user for menu selection
-  puts MSG[:prompt_msg]
+  system('clear') || system('cls') # wipe_screen
+
+  display_main_menu(loan, message)
   print MSG[:prompt]
   selection = gets.chomp
 
   case selection
   when /^q/i # Quit program
-    puts center(MSG[:exit], '*')
+    puts MSG[:exit].center(BOX[:terminal_width], '*')
     break
   when /^[1-4]$/ # Data entry
-    term = terms[selection.to_i - 1]
+    term = TERMS[selection.to_i - 1]
     loan[term] = get_term_value(term)
     message = "The loan #{term} has been updated!"
     message << ERR_MSG[:recalc] if enough_data?(loan, term)
   when /^c[1-4]$/i
-    term = terms[selection[-1].to_i - 1]
+    term = TERMS[selection[-1].to_i - 1]
     next(message = ERR_MSG[:not_enough_data]) unless enough_data?(loan, term)
 
     calculated_value = calculate_loan(loan, term)
